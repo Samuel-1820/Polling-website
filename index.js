@@ -1,26 +1,28 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import {BrowserRouter,Route,Router,Routes} from 'react-router-dom';
-import Result from './Result';
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-    <BrowserRouter>
-    <Routes>
-<Route path='/result' element={<Result/>}/>
+const express=require('express');
+const app = express();
+const cors=require('cors')
+const CreateModel = require ('./Models/Create')
+const mongoose =require('mongoose')
+app.use(express.json());
+app.use(cors())
+
+mongoose.connect("mongodb://127.0.0.1:27017/Poll")
+.then(()=>console.log("coonected to db"))
 
 
-    </Routes>
-    
-    </BrowserRouter>
-  </React.StrictMode>
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+app.post("/register",(req,res)=>{
+    CreateModel.create(req.body)
+    .then(Create => res.json(Create))
+    .catch(err =>res.json(err))
+})
+app.get("/getusers",(req,res)=>{
+    CreateModel.find({}).sort('-date')
+    .then(Create => res.json(Create))
+    .catch(err =>res.json(err))
+})
+app.get("/getusers",(req, res)=>{
+    res.send(`<h1>Working</h1>`);
+})
+app.listen(4500,()=>{
+    console.log("server is running");
+})
